@@ -4,16 +4,49 @@
 -- 曜日（day）は数字のまま返してよい
 
 -- 区画7：すべての授業と教室の情報（科目コードの順）
-
+SELECT
+    courses.code,
+    courses.name,
+    courses.room,
+    rooms.building,
+    rooms.capacity
+FROM courses
+LEFT JOIN rooms
+ON courses.room = rooms.code
+ORDER BY courses.code ASC;
 
 -- 区画8：曜日ごとの授業数（曜日の順）
-
+SELECT day, COUNT(*) AS course_count
+FROM courses
+GROUP BY day
+ORDER BY day ASC;
 
 -- 区画9：建物ごとの授業数と合計単位（建物名の順）
-
+SELECT
+    rooms.building,
+    COUNT(*) AS course_count,
+    SUM(courses.credits) AS total_credits
+FROM courses
+JOIN rooms
+ON courses.room = rooms.code
+GROUP BY rooms.building
+ORDER BY rooms.building ASC;
 
 -- 区画10：授業を3つ以上担当している教員（授業数の多い順、同数なら名前の順）
-
+SELECT
+    teacher,
+    COUNT(*) AS course_count
+FROM courses
+WHERE teacher IS NOT NULL
+GROUP BY teacher
+HAVING COUNT(*) >= 3
+ORDER BY course_count DESC, teacher ASC;
 
 -- 区画11：授業が1つも入っていない教室（教室コードの順）
-
+SELECT
+    rooms.code
+FROM rooms
+LEFT JOIN courses
+    ON rooms.code = courses.room
+WHERE courses.id IS NULL
+ORDER BY rooms.code ASC;
